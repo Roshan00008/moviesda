@@ -5,7 +5,7 @@
     {
       "id": "moviesda",
       "name": "Moviesda Tamil",
-      "description": "Tamil movies and downloads aggregator from Moviesda30.com (Supports 1080p, 720p, 360p direct streaming)",
+      "description": "Tamil movies aggregator from Moviesda30.com (Supports 1080p, 720p, 360p direct streaming)",
       "version": "1.0.0",
       "author": "Nishok",
       "supportedTypes": [
@@ -13,17 +13,14 @@
       ],
       "filename": "providers/moviesda.js",
       "enabled": true,
+      "formats": [
+        "mp4"
+      ],
       "logo": "",
       "contentLanguage": [
         "ta",
         "en"
-      ],
-      "formats": [
-        "mp4"
-      ],
-      "limited": false,
-      "disabledPlatforms": [],
-      "supportsExternalPlayer": true
+      ]
     }
   ]
 }
