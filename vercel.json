@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "manifest.json", "use": "@vercel/static" },
+    { "src": "providers/moviesda.js", "use": "@vercel/static" }
+  ],
+  "routes": [
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "*"
+      }
+    },
+    {
+      "src": "/providers/moviesda.js",
+      "dest": "/providers/moviesda.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "*"
+      }
+    }
+  ]
+}
