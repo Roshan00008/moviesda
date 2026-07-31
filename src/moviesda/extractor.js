@@ -1,7 +1,7 @@
 import cheerio from 'cheerio-without-node-native';
 import { fetchText, HEADERS } from './http.js';
 
-const BASE_URL = "https://moviesda30.com";
+const BASE_URL = "https://moviesda34.com";
 
 /**
  * Resolves full path if relative
@@ -26,9 +26,13 @@ async function getDirectMp4Url(downloadPageUrl) {
             const href = $(el).attr('href');
             const label = $(el).text().trim();
             
-            if (href && (href.includes('.mp4') || href.includes('cdnserver'))) {
+            // fastbytes.xyz is the new CDN (replaced hotshare.link)
+            // download.php?dl= links resolve to signed Cloudflare R2 mp4 streams
+            if (href && (href.includes('fastbytes.xyz') || href.includes('.mp4') || href.includes('cdnserver') || href.includes('download.php?dl='))) {
+                // Use stream=1 for inline playback instead of stream=0 (download mode)
+                const streamUrl = href.includes('stream=0') ? href.replace('stream=0', 'stream=1') : href;
                 directUrls.push({
-                    url: href,
+                    url: streamUrl,
                     title: label || "Download Server Direct"
                 });
             }

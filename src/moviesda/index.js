@@ -3,7 +3,7 @@ import { fetchText, fetchJson } from './http.js';
 import { scrapeMovieStreams } from './extractor.js';
 
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
-const BASE_URL = "https://moviesda30.com";
+const BASE_URL = "https://moviesda34.com";
 
 // Years that have their own category pages on Moviesda homepage
 const SUPPORTED_CATEGORY_YEARS = ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2012"];
@@ -97,7 +97,7 @@ async function findMovieByAZIndex(title, year) {
     const azUrl = `${BASE_URL}/tamil-movies/${letter}/`;
     console.log(`[Moviesda] Method 2: Scanning A-Z Index for letter (${letter.toUpperCase()}): ${azUrl}`);
     
-    for (let pageNum = 1; pageNum <= 3; pageNum++) {
+    for (let pageNum = 1; pageNum <= 6; pageNum++) {
         try {
             const url = pageNum === 1 ? azUrl : `${azUrl}?page=${pageNum}`;
             const html = await fetchText(url);
@@ -146,7 +146,7 @@ async function findMovieByAZIndex(title, year) {
  * Method 3: Fallback DuckDuckGo HTML Search
  */
 async function searchMovieDuckDuckGo(title, year) {
-    const query = `site:moviesda30.com ${title} ${year || ''}`.trim();
+    const query = `site:moviesda34.com ${title} ${year || ''}`.trim();
     const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
     
     console.log(`[Moviesda] Method 3: DuckDuckGo search fallback: ${searchUrl}`);
@@ -167,8 +167,9 @@ async function searchMovieDuckDuckGo(title, year) {
             
             const destUrl = decodeURIComponent(urlMatch[1]);
             
-            if (destUrl.includes('moviesda30.com')) {
-                const slug = destUrl.split('/').filter(Boolean).pop();
+            if (destUrl.includes('moviesda') && destUrl.includes('.com')) {
+                const normalizedUrl = destUrl.replace(/moviesda\d+\.com/g, 'moviesda34.com');
+                const slug = normalizedUrl.split('/').filter(Boolean).pop();
                 const yearMatch = slug.match(/-(\d{4})/);
                 const entryYear = yearMatch ? yearMatch[1] : null;
                 
@@ -179,7 +180,7 @@ async function searchMovieDuckDuckGo(title, year) {
                 const cleanedSlug = slug.replace(/-\d{4}/g, '').replace(/-/g, ' ');
                 
                 if (cleanTitle(cleanedSlug).includes(cleanedSearchTitle)) {
-                    matchedHref = destUrl;
+                    matchedHref = normalizedUrl;
                 }
             }
         });

@@ -1,6 +1,6 @@
 /**
  * Moviesda Nuvio Addon - Compiled
- * Generated: 2026-07-07T15:19:51.900Z
+ * Generated: 2026-07-31T10:06:57.750Z
  */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -96,7 +96,7 @@ function fetchJson(_0) {
 
 // src/moviesda/extractor.js
 var import_cheerio_without_node_native = __toESM(require("cheerio-without-node-native"));
-var BASE_URL = "https://moviesda30.com";
+var BASE_URL = "https://moviesda34.com";
 function resolveUrl(url) {
   if (!url)
     return "";
@@ -113,9 +113,10 @@ function getDirectMp4Url(downloadPageUrl) {
       $("a").each((_, el) => {
         const href = $(el).attr("href");
         const label = $(el).text().trim();
-        if (href && (href.includes(".mp4") || href.includes("cdnserver"))) {
+        if (href && (href.includes("fastbytes.xyz") || href.includes(".mp4") || href.includes("cdnserver") || href.includes("download.php?dl="))) {
+          const streamUrl = href.includes("stream=0") ? href.replace("stream=0", "stream=1") : href;
           directUrls.push({
-            url: href,
+            url: streamUrl,
             title: label || "Download Server Direct"
           });
         }
@@ -283,7 +284,7 @@ function scrapeMovieStreams(moviePageUrl, movieTitle) {
 
 // src/moviesda/index.js
 var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
-var BASE_URL2 = "https://moviesda30.com";
+var BASE_URL2 = "https://moviesda34.com";
 var SUPPORTED_CATEGORY_YEARS = ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2012"];
 function cleanTitle(title) {
   if (!title)
@@ -346,7 +347,7 @@ function findMovieByAZIndex(title, year) {
     }
     const azUrl = `${BASE_URL2}/tamil-movies/${letter}/`;
     console.log(`[Moviesda] Method 2: Scanning A-Z Index for letter (${letter.toUpperCase()}): ${azUrl}`);
-    for (let pageNum = 1; pageNum <= 3; pageNum++) {
+    for (let pageNum = 1; pageNum <= 6; pageNum++) {
       try {
         const url = pageNum === 1 ? azUrl : `${azUrl}?page=${pageNum}`;
         const html = yield fetchText(url);
@@ -383,7 +384,7 @@ function findMovieByAZIndex(title, year) {
 }
 function searchMovieDuckDuckGo(title, year) {
   return __async(this, null, function* () {
-    const query = `site:moviesda30.com ${title} ${year || ""}`.trim();
+    const query = `site:moviesda34.com ${title} ${year || ""}`.trim();
     const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
     console.log(`[Moviesda] Method 3: DuckDuckGo search fallback: ${searchUrl}`);
     try {
@@ -399,8 +400,9 @@ function searchMovieDuckDuckGo(title, year) {
         if (!urlMatch)
           return;
         const destUrl = decodeURIComponent(urlMatch[1]);
-        if (destUrl.includes("moviesda30.com")) {
-          const slug = destUrl.split("/").filter(Boolean).pop();
+        if (destUrl.includes("moviesda") && destUrl.includes(".com")) {
+          const normalizedUrl = destUrl.replace(/moviesda\d+\.com/g, "moviesda34.com");
+          const slug = normalizedUrl.split("/").filter(Boolean).pop();
           const yearMatch = slug.match(/-(\d{4})/);
           const entryYear = yearMatch ? yearMatch[1] : null;
           if (entryYear && year && entryYear.toString() !== year.toString()) {
@@ -408,7 +410,7 @@ function searchMovieDuckDuckGo(title, year) {
           }
           const cleanedSlug = slug.replace(/-\d{4}/g, "").replace(/-/g, " ");
           if (cleanTitle(cleanedSlug).includes(cleanedSearchTitle)) {
-            matchedHref = destUrl;
+            matchedHref = normalizedUrl;
           }
         }
       });
